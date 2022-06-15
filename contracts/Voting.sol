@@ -1,4 +1,5 @@
 
+
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
@@ -7,7 +8,7 @@ contract Voting{
 mapping(address=>bool) public isVoted;
 address [] public peopleVoted;
 
-string []public votingOptions;
+string []private votingOptions;
 uint256 public startDelay;
 uint256 public duration;
 
@@ -17,7 +18,8 @@ uint256 public creatingTime;
 
 
 mapping (string=>uint256) public findind;   
-enum Stages{wait,voting,result}
+
+enum Stages{wait,active,closed}
 Stages stage;
 
 
@@ -39,12 +41,12 @@ function updateTime() internal
 {
 if(creatingTime+startDelay*1 minutes<=block.timestamp && block.timestamp<=creatingTime+startDelay*1 minutes+duration*1 minutes)
 {
- stage=Stages.voting;
+ stage=Stages.active;
 }
 
 else if(block.timestamp>=creatingTime+startDelay*1 minutes+duration*1 minutes)
 {
- stage=Stages.result;
+ stage=Stages.closed;
 }
 }
 
@@ -107,7 +109,7 @@ modifier onlyNonVoted(address user)
 modifier onlyVotingTime()
 {
  updateTime();
- require(stage==Stages.voting,'not voting time');
+ require(stage==Stages.active,'not voting time');
  _;
 }
 
